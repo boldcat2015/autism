@@ -8,8 +8,6 @@ Train a model to help diagnosing autism based on behavior description, by learni
 - [Machine learning](#machine-learning)
 
 #### Data scraping
-Locate Q&As by the upper-right icon "患" or "医".
-
 Pages on the website contain:
 
 1. questions raised on-line first, in text, information classified with **blue indices**. [(Example)](http://www.haodf.com/wenda/dflifei_g_4649622403.htm)
