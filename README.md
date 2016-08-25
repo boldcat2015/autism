@@ -1,5 +1,7 @@
 ## Purpose
-Train a model to help diagnosing autism based on behavior description, by learning Q&As of Professor Li (李斐), using data on [this](http://dflifei.haodf.com/) website.
+Train a model to help diagnosing **autism** based on behavior description, by learning Q&As on [好大夫网](http://www.haodf.com/).
+
+We focus on Professor Li [(李斐)](http://www.haodf.com/doctor/DE4r0BCkuHzdexpWxIb1qIYC2U8VE.htm) first.
 
 ## Process
 - [Data scraping](#data-scraping)
@@ -18,7 +20,7 @@ Pages on the website contain:
 
 4. notices of meeting time, etc. [(Example)](http://www.haodf.com/wenda/dflifei_g_4663141326.htm)
 
-5. irrelevant information, gift, etc.
+5. gift tickets and other irrelevant information.
 
 We train our model mainly on data of the first class.
 
