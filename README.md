@@ -22,9 +22,15 @@ Pages on the website contain:
 
 We train our model mainly on data of the first class.
 
-_By yyyy.mm.dd, we have obtained xxx valid data out of XXX posts._
+_By 2016.08.26, we have obtained 1657 valid data out of 2400 posts._
 #### Data structure
-Data are stored in this way:
+Data are stored as pandas.DataFrame object:
+
+  symptom | symptom_time | diagnosis | diagnosis_time | url
+  :--- | :---: | :--- | :---: | :---
+  小孩不愿意做作业…… | 2015-12-29 | 家长您好，建议您…… | 2015-12-30 | [http://www.haodf.com/...](http://www.haodf.com/wenda/dflifei_g_4039325820.htm)
+
+saved in pickle file.
 
 #### Natural language processing
 
