@@ -33,4 +33,7 @@ saved in pickle file.
 
 ### Natural language processing
 
+Tool: [Jieba](https://github.com/fxsjy/jieba)(结巴分词) -- Python Chinese word segmentation module
+
+
 ### Machine learning
