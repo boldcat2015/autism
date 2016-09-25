@@ -5,7 +5,8 @@
 
 # Web scraper of Q&As on Haodf.com
 
-import requests
+# import requests
+import urllib.request
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
@@ -15,11 +16,21 @@ import numpy as np
 webheader = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4)         AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
 
 def getObj(pageurl): # from url to soup
+    '''
     r = requests.get(url=pageurl, headers = webheader)
     if r.status_code == requests.codes.ok:
         bsObj = BeautifulSoup(r.content, "lxml")
         return bsObj
     else:
+        print('\033[33m Warning:\033[0m Fail to open:', pageurl)
+        return None
+    '''
+    try:
+        req = urllib.request.Request(url=pageurl, headers=webheader)
+        webPage = urllib.request.urlopen(req)
+        bsObj = BeautifulSoup(webPage, "lxml")
+        return bsObj
+    except:
         print('\033[33m Warning:\033[0m Fail to open:', pageurl)
         return None
 
