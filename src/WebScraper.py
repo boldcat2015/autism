@@ -103,7 +103,7 @@ def getPosts(pageurl): # one page of Q&As
     QAs = list()
     posts = bsObj.find("div", {"class":"zixun_list"}).findAll("a", {"class":"td_link"})
     for post in posts:
-        # print('    Now scraping post', post['href'])
+        print('    Now scraping post', post['href'])
         QA = getQA(post['href'])
         if QA:
             QAs.append(QA)
@@ -125,7 +125,7 @@ def getDaifu(pageurl): # all Q&A of one doctor
     n = int(re.sub(r'[^0-9]','',n))
     for i in range(1, n+1): # 1-n pages, each has 25 posts at most
         listurl = pageurl + '?type=&p=' + str(i)
-        # print('  Now scraping page', i)
+        print('  Now scraping page', i)
         df = df.append(getPosts(listurl), ignore_index=True)
     print(totalposts, n, len(df))
     return df
