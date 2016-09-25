@@ -5,7 +5,7 @@
 
 # Web scraper of Q&As on Haodf.com
 
-import urllib.request
+import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
@@ -15,18 +15,11 @@ import numpy as np
 webheader = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4)         AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
 
 def getObj(pageurl): # from url to soup
-    req = urllib.request.Request(url=pageurl, headers=webheader)
-    try:
-        webPage = urllib.request.urlopen(req)
-        """
-        print(type(webPage))
-        print(webPage.geturl())
-        print(webPage.info())
-        print(webPage.getcode())
-        """
-        bsObj = BeautifulSoup(webPage, "lxml")
+    r = requests.get(url=pageurl, headers = webheader)
+    if r.status_code == requests.codes.ok:
+        bsObj = BeautifulSoup(r.content, "lxml")
         return bsObj
-    except:
+    else:
         print('\033[33m Warning:\033[0m Fail to open:', pageurl)
         return None
 
@@ -114,7 +107,7 @@ def getPosts(pageurl): # one page of Q&As
         QA = getQA(post['href'])
         if QA:
             QAs.append(QA)
-    df = pd.DataFrame(QAs,         columns=['咨询标题','咨询时间','疾病','病情描述','希望提供的帮助','所就诊医院科室',                 '用药情况','治疗情况','既往病史','标签','标签网址','回复时间','大夫回复','url'])
+    df = pd.DataFrame(QAs,         columns=['咨询标题','咨询时间','疾病','病情描述','希望提供的帮助','所就诊医院科室','用药情况',                  '治疗情况','既往病史','标签','标签网址','大夫回复','大夫','回复时间','url'])
     return df
 
 # testposts = 'http://dflifei.haodf.com/zixun/list.htm'
@@ -132,7 +125,7 @@ def getDaifu(pageurl): # all Q&A of one doctor
     n = int(re.sub(r'[^0-9]','',n))
     for i in range(1, n+1): # 1-n pages, each has 25 posts at most
         listurl = pageurl + '?type=&p=' + str(i)
-        print('Now scraping page', i)
+        # print('  Now scraping page', i)
         df = df.append(getPosts(listurl), ignore_index=True)
     print(totalposts, n, len(df))
     return df
@@ -150,7 +143,7 @@ def getDocSite(pageurl): # doctor's personal website
         site = doc.find("a", {"class":"personweb-sickness-btn"})
         name = doc.find("a", {"class":"blue_a3"})
         if site: # doctor has personal website
-            docs.append({'医生姓名':name.get_text(), '个人网站':site['href']})
+            docs.append({'医生姓名':name.get_text(), '个人网站':site['href']+'zixun/list.htm'})
     return docs
 
 def getJibing(pageurl): # get all doctors good at this disease
@@ -164,8 +157,5 @@ def getJibing(pageurl): # get all doctors good at this disease
     return docs
 
 # testjibing = 'http://www.haodf.com/jibing/zibizheng.htm'
-# docs = pd.DataFrame(getJibing(testjibing), columns=['医生姓名','个人网站'])
-# docs = docs.to_csv('../data/doctors.csv', encoding='GBK')
-# docs = pd.read_csv('../data/doctors.csv', encoding='GBK', index_col=0)
-# docs
+# getJibing(testjibing)
 
