@@ -1,7 +1,6 @@
 ## Purpose
 Train a model to help diagnosing **autism** based on description of behavior, by learning Q&As on [好大夫网](http://www.haodf.com/jibing/zibizheng.htm).
 
-We start with Q&A posts of one certain doctor first.
 ## Process
 - [Data scraping](#data-scraping)
 - [Data structure](#data-structure)
@@ -25,11 +24,12 @@ _By 2016.08.26, we have obtained 1657 valid data out of 2400 posts._
 ### Data structure
 Data are stored as pandas.DataFrame object:
 
-  symptom | symptom_time | diagnosis | diagnosis_time | url
-  :--- | :---: | :--- | :---: | :---
-  小孩不愿意做作业…… | 2015-12-29 | 家长您好，建议您…… | 2015-12-30 | [http://www.haodf.com/...](http://www.haodf.com/wenda/dflifei_g_4039325820.htm)
+    columns=[  
+    '咨询标题','咨询时间','疾病','病情描述','希望提供的帮助',  
+    '所就诊医院科室','用药情况','治疗情况','既往病史','标签',  
+    '标签网址','大夫回复','大夫','回复时间','url'])
 
-saved in pickle file.
+saved in csv file, encoding in utf-8.
 
 ### Natural language processing
 
