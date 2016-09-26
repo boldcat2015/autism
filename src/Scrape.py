@@ -12,6 +12,7 @@ index = sys.argv[1]
 foldername = sys.argv[2]
 path = '../data/'+foldername+'/'+str(index).zfill(3)
 sys.stdout = open(path+'.log', 'a')
+sys.stderr = open(path+'.log', 'a')
 docs = pd.read_csv('../data/doctors.csv', encoding='GBK', index_col=0)
 pageurl = docs.ix[int(index)]['个人网站']
 name = docs.ix[int(index)]['医生姓名']
