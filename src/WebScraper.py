@@ -12,6 +12,13 @@ import pandas as pd
 import re
 import datetime
 import numpy as np
+import sys
+
+def time_stamp():
+    return datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+
+
+# In[2]:
 
 webheader = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4)         AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
 
@@ -31,11 +38,39 @@ def getObj(pageurl): # from url to soup
         bsObj = BeautifulSoup(webPage, "lxml")
         return bsObj
     except:
-        print('\033[33m Warning:\033[0m Fail to open:', pageurl)
+        print(time_stamp())
+        print('\033[33m!Warning:\033[0m Fail to open:', pageurl)
         return None
 
 
-# In[2]:
+# In[3]:
+
+def getDocSite(pageurl): # doctor's personal website
+    bsObj = getObj(pageurl)
+    docs = list()
+    for doc in bsObj.findAll("li", {"class":"hp_doc_box_serviceStar"}):
+        site = doc.find("a", {"class":"personweb-sickness-btn"})
+        name = doc.find("a", {"class":"blue_a3"})
+        if site: # doctor has personal website
+            docs.append({'医生姓名':name.get_text(), '个人网站':site['href']+'zixun/list.htm'})
+    return docs
+
+def getJibing(pageurl): # get all doctors good at this disease
+    docurl = re.sub(r'.htm$', '/daifu_1_all_all_all_all.htm', pageurl)
+    bsObj = getObj(docurl)
+    docs = list()
+    n = int(bsObj.find("font", {"class":"black pl5 pr5"}).get_text().strip())
+    for i in range(1, n+1):
+        docsurl = re.sub(r'.htm$', '/daifu_'+str(i)+'_all_all_all_all.htm', pageurl)
+        docs = docs + getDocSite(docsurl)
+    return docs
+
+# testjibing = 'http://www.haodf.com/jibing/zibizheng.htm'
+# docs = pd.DataFrame(getJibing(testjibing), columns=['医生姓名','个人网站'])
+# docs = docs.to_csv('../data/doctors.csv', encoding='GBK')
+
+
+# In[4]:
 
 def getText(bsObj, feature): # feature with blue index
     try:
@@ -57,7 +92,8 @@ def getTag(pageurl): # official name of jibing
         tag = pos.find("h1").get_text()
         return tag
     except:
-        print('\033[33m Warning:\033[0m Fail to get tag:', pageurl)
+        print('    ' + time_stamp())
+        print('\033[33m    Warning:\033[0m Fail to get tag:', pageurl)
         return None
 
 def getQA(pageurl): # build each row of the database 
@@ -100,21 +136,23 @@ def getQA(pageurl): # build each row of the database
                 break # only the first reply is valid
         return QA
     except:
-        print('\033[33m Warning:\033[0m Fail to get Q&A:', pageurl)
+        print('   '+time_stamp())
+        print('\033[33m   Warning:\033[0m Fail to get Q&A:', pageurl)
         return None
 
 # testqa = 'http://www.haodf.com/wenda/dflifei_g_4459684754.htm'
 # getQA(testqa)
 
 
-# In[3]:
+# In[5]:
 
 def getPosts(pageurl): # one page of Q&As
     bsObj = getObj(pageurl)
     QAs = list()
     posts = bsObj.find("div", {"class":"zixun_list"}).findAll("a", {"class":"td_link"})
     for post in posts:
-        print('    Now scraping post', post['href'])
+        print('   '+time_stamp())
+        print('   Now scraping post', post['href'])
         QA = getQA(post['href'])
         if QA:
             QAs.append(QA)
@@ -125,48 +163,26 @@ def getPosts(pageurl): # one page of Q&As
 # getPosts(testposts)
 
 
-# In[4]:
+# In[6]:
 
-def getDaifu(pageurl): # all Q&A of one doctor
+def getDaifu(pageurl, name): # all Q&A of one doctor
+    print(' '+time_stamp())
+    print(' Now scraping doctor', name)
     bsObj = getObj(pageurl)
-    df = pd.DataFrame(         columns=['咨询标题','咨询时间','疾病','病情描述','希望提供的帮助','所就诊医院科室',                 '用药情况','治疗情况','既往病史','标签','标签网址','回复时间','大夫回复','url'])
-    
+    df = pd.DataFrame()
     totalposts = int(bsObj.find("span", {"class":"f14 orange1"}).get_text())
     n = bsObj.find("a", {"class":"page_turn_a","rel":"true"}).get_text()
     n = int(re.sub(r'[^0-9]','',n))
     for i in range(1, n+1): # 1-n pages, each has 25 posts at most
         listurl = pageurl + '?type=&p=' + str(i)
-        print('  Now scraping page', i)
+        print('  '+time_stamp())
+        print('  Now scraping page', str(i))
         df = df.append(getPosts(listurl), ignore_index=True)
-    print(totalposts, n, len(df))
+    print(time_stamp())
+    print('\033[32m Finish!\033[0m scraped', str(n), 'pages,',               str(len(df)), 'Q&As out of', str(totalposts), 'posts.\n')
+    df['大夫'] = name
     return df
 
 # testdaifu = 'http://dflifei.haodf.com/zixun/list.htm'
 # df = getDaifu(testdaifu)
-
-
-# In[5]:
-
-def getDocSite(pageurl): # doctor's personal website
-    bsObj = getObj(pageurl)
-    docs = list()
-    for doc in bsObj.findAll("li", {"class":"hp_doc_box_serviceStar"}):
-        site = doc.find("a", {"class":"personweb-sickness-btn"})
-        name = doc.find("a", {"class":"blue_a3"})
-        if site: # doctor has personal website
-            docs.append({'医生姓名':name.get_text(), '个人网站':site['href']+'zixun/list.htm'})
-    return docs
-
-def getJibing(pageurl): # get all doctors good at this disease
-    docurl = re.sub(r'.htm$', '/daifu_1_all_all_all_all.htm', pageurl)
-    bsObj = getObj(docurl)
-    docs = list()
-    n = int(bsObj.find("font", {"class":"black pl5 pr5"}).get_text().strip())
-    for i in range(1, n+1):
-        docsurl = re.sub(r'.htm$', '/daifu_'+str(i)+'_all_all_all_all.htm', pageurl)
-        docs = docs + getDocSite(docsurl)
-    return docs
-
-# testjibing = 'http://www.haodf.com/jibing/zibizheng.htm'
-# getJibing(testjibing)
 
