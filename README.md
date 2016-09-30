@@ -20,7 +20,7 @@ Pages on the website contain:
 
 We train our model mainly on data of the first class.
 
-_By 2016.08.26, we have obtained 1657 valid data out of 2400 posts._
+_By 2016.09.30, we have obtained 42934 valid Q&As out of 62265 posts, of 32 different doctors._
 ### Data structure
 Data are stored as pandas.DataFrame object:
 
@@ -30,6 +30,8 @@ Data are stored as pandas.DataFrame object:
     '标签网址','大夫回复','大夫','回复时间','url'])
 
 saved in csv file, encoding in utf-8.
+
+doctor list and summary of each version of data are encoding in GBK.
 
 ### Natural language processing
 

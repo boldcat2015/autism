@@ -1,0 +1,8 @@
+ 2016-09-28 01:08:07
+ Now scraping doctor 刘靖
+Traceback (most recent call last):
+  File "Scrape.py", line 19, in <module>
+    df = getDaifu(pageurl, name)
+  File "/Users/Andy/Documents/2016summer/autism/src/WebScraper.py", line 174, in getDaifu
+    n = bsObj.find("a", {"class":"page_turn_a","rel":"true"}).get_text()
+AttributeError: 'NoneType' object has no attribute 'get_text'
